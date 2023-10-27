@@ -1,6 +1,9 @@
+'use client'
+
 import { cloneElement } from 'react'
 import { match } from 'ts-pattern'
 import { HslColor, HslColorPicker } from 'react-colorful'
+import { useTheme } from 'next-themes'
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { CONFIG_INPUTS } from '@/lib/config'
 import { cn } from '@/lib/utils'
@@ -12,8 +15,19 @@ type ConfiguratorProps = {
 }
 
 export default function Configurator({ className, style, trigger }: ConfiguratorProps) {
+  const { theme } = useTheme()
+
   const handleChange = (variableName: string, newColor: HslColor) => {
-    document.documentElement.style.setProperty(variableName, `${newColor.h} ${newColor.s}% ${newColor.l}%`)
+    const color = `${newColor.h} ${newColor.s}% ${newColor.l}%`
+
+    /** Update the root in case of light mode */
+    if (theme === 'light') {
+      document.documentElement.style.setProperty(variableName, color)
+    } else {
+      /** Update .dark in case of dark mode */
+      const darkElement = document.querySelector<HTMLElement>('.dark')
+      darkElement?.style.setProperty(variableName, color)
+    }
   }
 
   return (
@@ -28,7 +42,7 @@ export default function Configurator({ className, style, trigger }: Configurator
             .returnType<React.ReactNode>()
             .with({ type: 'color' }, ({ label, variableName }) => {
               return (
-                <div className="space-y-2">
+                <div className="space-y-2" key={variableName}>
                   <div className="text-lg">{label}</div>
                   <HslColorPicker
                     onChange={(color) => {
