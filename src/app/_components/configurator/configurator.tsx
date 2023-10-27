@@ -2,11 +2,12 @@
 
 import { cloneElement } from 'react'
 import { match } from 'ts-pattern'
-import { HslColor, HslColorPicker } from 'react-colorful'
+import { HslColor } from 'react-colorful'
 import { useTheme } from 'next-themes'
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { CONFIG_INPUTS } from '@/lib/config'
 import { cn } from '@/lib/utils'
+import ColorPicker from '../color-picker'
 
 type ConfiguratorProps = {
   className?: string
@@ -35,7 +36,9 @@ export default function Configurator({ className, style, trigger }: Configurator
       <SheetTrigger asChild>{cloneElement(trigger)}</SheetTrigger>
       <SheetContent className={cn('overflow-y-auto', className)} style={style}>
         <SheetTitle>Theme Configurator</SheetTitle>
-        <SheetDescription>Effortlessly craft beautiful themes for your Next.js applications</SheetDescription>
+        <SheetDescription className="mb-4">
+          Effortlessly craft beautiful themes for your Next.js applications
+        </SheetDescription>
 
         {CONFIG_INPUTS.map((input) =>
           match(input)
@@ -44,7 +47,7 @@ export default function Configurator({ className, style, trigger }: Configurator
               return (
                 <div className="space-y-2" key={variableName}>
                   <div className="text-lg">{label}</div>
-                  <HslColorPicker
+                  <ColorPicker
                     onChange={(color) => {
                       handleChange(variableName, color)
                     }}
